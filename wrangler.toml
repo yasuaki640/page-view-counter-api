@@ -12,10 +12,10 @@ compatibility_date = "2023-12-01"
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[[d1_databases]]
+binding = "DB"
+database_name = "page-view-counter-api"
+database_id = "5704dd04-bc1f-4897-b283-1f76785f7209"
 
 # [ai]
 # binding = "AI"
