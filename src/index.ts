@@ -1,9 +1,22 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
 
-const app = new Hono()
+type Bindings = {
+	DB: D1Database;
+};
 
-app.get('/', (c) => {
-  return c.text('Hello Yasu!')
-})
+const app = new Hono<{ Bindings: Bindings }>();
 
-export default app
+app.get("/increment-count", async (c) => {
+	const db = c.env.DB;
+	const stmt = db.prepare("INSERT INTO Accesses DEFAULT VALUES;");
+
+	try {
+		await stmt.run();
+	} catch (e) {
+		return c.json({ success: false }, 500);
+	}
+
+	return c.json({ success: true }, 204);
+});
+
+export default app;
