@@ -1,13 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
-
-type Bindings = {
-	DB: D1Database;
-	ALLOW_ORIGIN: string;
-};
-
-type IncrementRes = { success: true; count: number } | { success: false };
+import type { Bindings, IncrementRes } from "./types";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
@@ -21,12 +15,15 @@ app.use(corsMiddleware);
 
 app.get("/increment-count", async (c) => {
 	const db = c.env.DB;
+	const countStmt = db.prepare("SELECT COUNT(*) as count FROM Accesses;");
 	const insertStmt = db.prepare("INSERT INTO Accesses DEFAULT VALUES;");
-	const countStmt = db.prepare("SELECT COUNT(*) AS count FROM Accesses;");
 
 	try {
-		await insertStmt.run();
-		const count = (await countStmt.first<number>("count")) ?? 0;
+		const beforeAccessCount = (await countStmt.first<number>("count")) ?? 0;
+		const count = beforeAccessCount + 1;
+
+		insertStmt.run(); // dont wait execute insert for performance
+
 		return c.json<IncrementRes>({ success: true, count }, 201);
 	} catch (e) {
 		console.error(e);
