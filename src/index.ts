@@ -15,15 +15,12 @@ app.use(corsMiddleware);
 
 app.get("/increment-count", async (c) => {
 	const db = c.env.DB;
-	const countStmt = db.prepare("SELECT COUNT(*) as count FROM Accesses;");
 	const insertStmt = db.prepare("INSERT INTO Accesses DEFAULT VALUES;");
+	const countStmt = db.prepare("SELECT COUNT(*) AS count FROM Accesses;");
 
 	try {
-		const beforeAccessCount = (await countStmt.first<number>("count")) ?? 0;
-		const count = beforeAccessCount + 1;
-
-		insertStmt.run(); // dont wait execute insert for performance
-
+		await insertStmt.run();
+		const count = (await countStmt.first<number>("count")) ?? 0;
 		return c.json<IncrementRes>({ success: true, count }, 201);
 	} catch (e) {
 		console.error(e);
