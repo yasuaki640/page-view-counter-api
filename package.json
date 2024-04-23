@@ -6,7 +6,9 @@
     "biome-apply": "bunx @biomejs/biome check --apply ./src"
   },
   "dependencies": {
-    "hono": "^4.2.2"
+    "@hono/zod-validator": "^0.2.1",
+    "hono": "^4.2.2",
+    "zod": "^3.23.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
